@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <div id="add">
+      <div>商品名:<input type="text" v-model="listAdd.name" /></div>
+      <div>数量:<input type="text" v-model="listAdd.quantity" /></div>
+      <div>价格:<input type="text" v-model="listAdd.price" /></div>
+      <button @click='Additem'>提交</button>
+    </div>
+  </body>
+  <script src="./js/vue.js"></script>
+  <script src="./js/axios.js"></script>
+  <script>
+    let vm = new Vue({
+      el: "#add",
+      data: {
+        listAdd: {
+          name: "",
+          quantity: "",
+          price: "",
+        },
+      },
+      methods: {
+        async Additem() {
+          let add_to =  this.listAdd ;
+          let result = await axios.post("http://127.0.0.1:5000/Additem",{ add_to });
+              let {code,message}=result.data
+              if(code == 10002){
+                  alert(message)
+                  location.href = 'index.html'
+              }else{
+                  alert(message)
+              }
+        },
+        
+      },
+    });
+  </script>
+</html>

@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <link rel="stylesheet" href="//unpkg.com/layui@2.6.8/dist/css/layui.css" />
+  </head>
+  <body>
+    <div id="app">
+      <table class="layui-table">
+        <colgroup>
+          <col width="150" />
+          <col width="200" />
+          <col />
+        </colgroup>
+        <thead>
+          <tr>
+            <th>名称</th>
+            <th>数量</th>
+            <th>价格</th>
+            <th>入库时间</th>
+            <th>功能</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="(time,index) in addlist" :key="time.id">
+            <td>{{time.id}}</td>
+            <td>{{time.name}}</td>
+            <td>{{time.quantity}}</td>
+            <td>{{time.price}}</td>
+            <td>{{time.add_time}}</td>
+            <td>
+              <button @click="add">添加</button>
+              <button @click="remove(time.id,index)">删除</button>
+              <button @click='edits(index)'>编辑</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </body>
+  <script src="https://cdn.bootcdn.net/ajax/libs/layui/2.6.8/layui.js"></script>
+  <script src="./js/vue.js"></script>
+  <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+  <script>
+    let vm = new Vue({
+      el: "#app",
+      data: {
+        addlist: [],
+      },
+      methods: {
+        Ghetto() {
+          var This = this;
+          axios({
+            method: "get",
+            url: "http://localhost:5000/index",
+          }).then(function (res) {
+            This.addlist = res.data;
+          });
+        },
+        add() {
+          location.href = "add.html";
+        },
+        edits(index){
+    
+          let datas=JSON.stringify(this.addlist[index]) 
+
+          localStorage.setItem('edd',datas)
+          location.href = "edit.html";
+
+        },
+        async remove(id,index) {
+          let result = await axios.post("http://127.0.0.1:5000/EliminateData", { id });
+          let { code, message } = result.data;
+          if (code === 10004) {
+            alert("删除成功");
+            //splice处理数组内的元素，至少需要2个 以上的参数， 第一个参数 是从第几个下标开始， 第二个参数是删除多少个， 第三个后面的就是在第一个参数的下标开始新增可以多个
+            this.addlist.splice(index,1)
+          } else {
+            alert("删除失败");
+          }
+        },
+      },
+
+      mounted: function () {
+        this.Ghetto();
+      },
+    });
+  </script>
+</html>
